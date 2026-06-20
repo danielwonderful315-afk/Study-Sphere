@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Exam Dates - StudySphere{% endblock %}
+{% block content %}
+
+<style>
+.countdown-urgent{background:rgba(239,68,68,.15);color:#ef4444}
+.countdown-soon{background:rgba(240,165,0,.15);color:var(--gold)}
+.countdown-normal{background:rgba(124,58,237,.15);color:var(--purple)}
+</style>
+
+<!-- Header -->
+<div class="mb-4">
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-1">
+        <h4 class="page-title mb-0">
+            <i class="bi bi-mortarboard-fill me-2" style="background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>Exam Dates
+        </h4>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'schedule' %}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-calendar3 me-1"></i>Study Planner
+            </a>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addExamModal">
+                <i class="bi bi-plus-circle me-1"></i>Add Exam
+            </button>
+        </div>
+    </div>
+    <p class="page-subtitle mb-0">Track your upcoming examinations</p>
+</div>
+
+<!-- Upcoming Exams -->
+<div class="card mb-4">
+    <div class="card-header py-3">
+        <h6 class="mb-0"><i class="bi bi-alarm me-2"></i>Upcoming Exams</h6>
+    </div>
+    <div class="card-body p-0">
+        {% if upcoming_exams %}
+        <div class="list-group list-group-flush">
+            {% for exam in upcoming_exams %}
+            <div class="list-group-item px-3 py-3">
+                <div class="d-flex align-items-start gap-3">
+                    <!-- Countdown -->
+                    <div class="text-center rounded p-2 flex-shrink-0
+                         {% if exam.days_until <= 3 %}countdown-urgent
+                         {% elif exam.days_until <= 7 %}countdown-soon
+                         {% else %}countdown-normal{% endif %}"
+                         style="min-width:52px;">
+                        <div class="fw-bold" style="font-size:1.3rem;line-height:1;">{{ exam.days_until }}</div>
+                        <div style="font-size:.65rem;">days left</div>
+                    </div>
+                    <!-- Details -->
+                    <div class="flex-grow-1" style="min-width:0;">
+                        <div class="fw-bold text-truncate">{{ exam.course }}</div>
+                        <div class="d-flex flex-wrap gap-2 mt-1">
+                            <span class="badge rounded-pill" style="background:rgba(124,58,237,.2);color:var(--purple);font-size:.72rem;">{{ exam.course_code }}</span>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i>{{ exam.exam_date|date:"M d, Y" }}
+                                {% if exam.exam_time %}&nbsp;·&nbsp;<i class="bi bi-clock me-1"></i>{{ exam.exam_time|time:"H:i" }}{% endif %}
+                            </small>
+                        </div>
+                        {% if exam.venue %}
+                        <small class="text-muted d-block mt-1"><i class="bi bi-geo-alt me-1"></i>{{ exam.venue }}</small>
+                        {% endif %}
+                        {% if exam.notes %}
+                        <small class="text-muted d-block mt-1">{{ exam.notes }}</small>
+                        {% endif %}
+                    </div>
+                    <!-- Delete -->
+                    <a href="{% url 'exam_delete' exam.pk %}"
+                       class="btn btn-sm btn-outline-danger flex-shrink-0"
+                       onclick="return confirm('Remove this exam?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5 px-3">
+            <i class="bi bi-calendar-x display-4 d-block mb-2"></i>
+            No upcoming exams registered yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Past Exams -->
+{% if past_exams %}
+<div class="card">
+    <div class="card-header py-3">
+        <h6 class="mb-0"><i class="bi bi-archive me-2"></i>Past Exams</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for exam in past_exams %}
+            <div class="list-group-item px-3 py-3 opacity-50">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="flex-grow-1" style="min-width:0;">
+                        <div class="fw-semibold text-muted text-truncate">{{ exam.course }}</div>
+                        <small class="text-muted">
+                            <span class="badge bg-secondary me-1" style="font-size:.68rem;">{{ exam.course_code }}</span>
+                            {{ exam.exam_date|date:"M d, Y" }}
+                        </small>
+                    </div>
+                    <a href="{% url 'exam_delete' exam.pk %}"
+                       class="btn btn-sm btn-outline-danger flex-shrink-0"
+                       onclick="return confirm('Remove this exam?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add Exam Modal -->
+<div class="modal fade" id="addExamModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-mortarboard me-2"></i>Register Exam Date</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'exam_add' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-8">
+                            <label class="form-label fw-semibold">Course Name</label>
+                            {{ form.course }}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-semibold">Code</label>
+                            {{ form.course_code }}
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-7">
+                            <label class="form-label fw-semibold">Exam Date</label>
+                            {{ form.exam_date }}
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label fw-semibold">Time <span class="text-muted fw-normal">(opt.)</span></label>
+                            {{ form.exam_time }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Venue <span class="text-muted fw-normal">(optional)</span></label>
+                        {{ form.venue }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Notes <span class="text-muted fw-normal">(optional)</span></label>
+                        {{ form.notes }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Register Exam
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

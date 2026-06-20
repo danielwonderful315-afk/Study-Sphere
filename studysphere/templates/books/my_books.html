@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}My Books - StudySphere{% endblock %}
+{% block content %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h4 class="page-title mb-1">
+            <i class="bi bi-collection-fill me-2" style="background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>My Books
+        </h4>
+        <p class="page-subtitle mb-0">All books you have uploaded</p>
+    </div>
+    <a href="{% url 'book_upload' %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-cloud-upload-fill me-1"></i>Upload New
+    </a>
+</div>
+
+{% if my_books %}
+<div class="card">
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for book in my_books %}
+            <div class="list-group-item px-3 py-3">
+                <div class="d-flex align-items-start gap-3">
+                    <!-- Icon -->
+                    <div class="rounded p-2 flex-shrink-0" style="background:rgba(124,58,237,.1);">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i>
+                    </div>
+                    <!-- Info -->
+                    <div class="flex-grow-1 min-width-0" style="min-width:0;">
+                        <div class="fw-semibold text-truncate">{{ book.title }}</div>
+                        <small class="text-muted">{{ book.course_code }} &nbsp;·&nbsp; {{ book.upload_date|date:"M d, Y" }}</small>
+                        <!-- Status on mobile -->
+                        <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                            {% if book.status == 'approved' %}
+                            <span class="badge rounded-pill" style="background:rgba(0,255,136,.15);color:var(--green);border:1px solid rgba(0,255,136,.3);font-size:.72rem;">
+                                <i class="bi bi-check-circle-fill me-1"></i>Approved
+                            </span>
+                            <a href="{% url 'book_read' book.pk %}" class="btn btn-primary btn-sm py-0 px-2" style="font-size:.75rem;">
+                                <i class="bi bi-book-open me-1"></i>Read
+                            </a>
+                            {% elif book.status == 'pending' %}
+                            <span class="badge rounded-pill" style="background:rgba(240,165,0,.15);color:var(--gold);border:1px solid rgba(240,165,0,.3);font-size:.72rem;">
+                                <i class="bi bi-clock-fill me-1"></i>Pending Approval
+                            </span>
+                            {% else %}
+                            <span class="badge rounded-pill" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);font-size:.72rem;">
+                                <i class="bi bi-x-circle-fill me-1"></i>Rejected
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5 px-3">
+        <i class="bi bi-collection display-3 d-block mb-3" style="color:var(--text3);"></i>
+        <h5 class="fw-bold mb-2">No books yet</h5>
+        <p class="text-muted mb-4">You haven't uploaded any books yet. Start building your library!</p>
+        <a href="{% url 'book_upload' %}" class="btn btn-primary px-4">
+            <i class="bi bi-cloud-upload-fill me-2"></i>Upload Your First Book
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>StudySphere — Study Smarter. Score Higher.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04080f;--bg2:#080e1a;--surface:#0c1424;--surface2:#111827;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --cyan:#00d4ff;--gold:#f0a500;--green:#00ff88;--purple:#7c3aed;--pink:#ff3cac;
+  --text:#e8edf5;--text2:#8899bb;--text3:#4a5a7a;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+  --nav-bg:rgba(4,8,15,.97);--card-bg:#0c1424;--card-border:rgba(255,255,255,.12);
+}
+[data-theme="light"]{
+  --bg:linear-gradient(135deg,#f0ebff 0%,#e8f4ff 40%,#fff0fb 100%);
+  --bg-solid:#f2eeff;--bg2:#e8e0ff;--surface:#ffffff;--surface2:#f5f0ff;
+  --border:rgba(124,58,237,.1);--border2:rgba(124,58,237,.2);
+  --text:#0d0820;--text2:#3d2a6b;--text3:#8878aa;
+  --nav-bg:rgba(242,238,255,.97);--card-bg:#ffffff;--card-border:rgba(124,58,237,.18);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-body);font-weight:400;line-height:1.6;overflow-x:hidden;
+  transition:color .3s;
+}
+[data-theme="dark"] body{background:#04080f}
+[data-theme="light"] body{background:linear-gradient(135deg,#f0ebff 0%,#e8f4ff 40%,#fff0fb 100%) fixed}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+.grid-bg{
+  position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:0;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%);
+}
+[data-theme="light"] .grid-bg{
+  background-image:linear-gradient(rgba(124,58,237,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.04) 1px,transparent 1px);
+  opacity:.6;
+}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:bfloat 12s ease-in-out infinite}
+.blob1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,212,255,.1) 0%,transparent 70%);top:-150px;right:-100px}
+.blob2{width:400px;height:400px;background:radial-gradient(circle,rgba(255,60,172,.08) 0%,transparent 70%);bottom:-100px;left:-100px;animation-delay:-6s}
+.blob3{width:350px;height:350px;background:radial-gradient(circle,rgba(124,58,237,.07) 0%,transparent 70%);top:40%;left:40%;animation-delay:-3s}
+[data-theme="light"] .blob1{background:radial-gradient(circle,rgba(124,58,237,.18) 0%,transparent 70%)}
+[data-theme="light"] .blob2{background:radial-gradient(circle,rgba(255,60,172,.15) 0%,transparent 70%)}
+[data-theme="light"] .blob3{background:radial-gradient(circle,rgba(0,180,255,.12) 0%,transparent 70%)}
+@keyframes bfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+/* NAVBAR */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 0;transition:all .4s}
+nav.scrolled{background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:.7rem 0}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-logo{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:.4rem;letter-spacing:-.5px;flex-shrink:0}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pdot 2s ease infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 10px var(--cyan)}50%{box-shadow:0 0 20px var(--cyan),0 0 40px rgba(0,212,255,.3)}}
+[data-theme="light"] .logo-dot{background:var(--purple);box-shadow:0 0 10px var(--purple)}
+.nav-links{display:flex;align-items:center;gap:.1rem}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.88rem;font-weight:500;padding:.45rem .9rem;border-radius:8px;transition:all .2s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:rgba(128,128,128,.1)}
+.nav-cta{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.theme-btn{background:none;border:1px solid var(--border2);color:var(--text2);padding:.45rem .7rem;border-radius:8px;cursor:pointer;font-size:.95rem;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.theme-btn:hover{color:var(--text);border-color:var(--cyan);background:rgba(0,212,255,.08)}
+[data-theme="light"] .theme-btn:hover{border-color:var(--purple);background:rgba(124,58,237,.08)}
+.btn-ghost{color:var(--text2);text-decoration:none;font-size:.88rem;font-weight:500;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border2);transition:all .2s;white-space:nowrap}
+.btn-ghost:hover{color:var(--text);border-color:rgba(128,128,128,.3)}
+.btn-nav-main{color:#fff;text-decoration:none;font-size:.88rem;font-weight:700;padding:.5rem 1.2rem;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--pink));transition:all .25s;font-family:var(--font-display);white-space:nowrap}
+.btn-nav-main:hover{box-shadow:0 0 24px rgba(124,58,237,.5);transform:translateY(-1px);color:#fff}
+.nav-toggle{display:none;background:none;border:1px solid var(--border2);color:var(--text);padding:.4rem .7rem;border-radius:8px;font-size:1.1rem;cursor:pointer}
+.nav-mobile{display:none;position:fixed;top:60px;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem 1.5rem;z-index:999;flex-direction:column;gap:.3rem}
+.nav-mobile.open{display:flex}
+.nav-mobile a{color:var(--text2);text-decoration:none;font-size:.95rem;font-weight:500;padding:.7rem 1rem;border-radius:8px;transition:all .2s}
+.nav-mobile a:hover{color:var(--text);background:rgba(128,128,128,.1)}
+.nav-mobile-cta{display:flex;gap:.75rem;margin-top:.5rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.nav-mobile-cta a{flex:1;text-align:center;font-weight:700 !important;font-family:var(--font-display)}
+.nav-mobile-cta .m-signin{border:1px solid var(--border2) !important;color:var(--text) !important}
+.nav-mobile-cta .m-start{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff !important}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;z-index:1;padding:6rem 1.5rem 4rem}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(255,60,172,.08));border:1px solid rgba(124,58,237,.3);color:var(--purple);padding:.35rem 1rem;border-radius:50px;font-size:.78rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1.2rem}
+[data-theme="dark"] .hero-badge{color:var(--cyan);border-color:rgba(0,212,255,.25);background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(255,60,172,.08))}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.8rem,5vw,4.8rem);font-weight:800;line-height:1.0;letter-spacing:-2.5px;margin-bottom:1.2rem}
+.h1-line1{color:var(--text)}
+.h1-line2{background:linear-gradient(135deg,var(--cyan) 0%,#0080ff 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.h1-line3{background:linear-gradient(135deg,var(--gold) 0%,var(--pink) 60%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.h1-line4{color:var(--text)}
+.hero-sub{color:var(--text2);font-size:1rem;line-height:1.7;max-width:440px;margin-bottom:1.8rem}
+.hero-btns{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-h1{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:700;font-size:.95rem;padding:.85rem 1.8rem;border-radius:10px;text-decoration:none;transition:all .25s;letter-spacing:-.2px}
+.btn-h1-main{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.35)}
+.btn-h1-main:hover{box-shadow:0 8px 32px rgba(124,58,237,.55);transform:translateY(-2px);color:#fff}
+.btn-h1-out{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.btn-h1-out:hover{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06);transform:translateY(-2px)}
+.hero-trust{display:flex;align-items:center;gap:.75rem;margin-top:1.5rem}
+.avatars{display:flex}
+.av{width:26px;height:26px;border-radius:50%;border:2px solid var(--bg-solid,#04080f);margin-left:-7px}
+.av:first-child{margin-left:0}
+.trust-txt{color:var(--text3);font-size:.8rem}
+.trust-txt span{color:var(--text2);font-weight:500}
+/* HERO VISUAL */
+.hero-visual{position:relative}
+.hero-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:1.3rem;box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 50px rgba(124,58,237,.1);position:relative;overflow:hidden;transition:background .3s,border-color .3s}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),var(--pink),transparent);opacity:.7}
+[data-theme="light"] .hero-card{box-shadow:0 24px 60px rgba(124,58,237,.2),0 0 60px rgba(255,60,172,.1);background:#ffffff}
+.ctopbar{display:flex;align-items:center;gap:.4rem;margin-bottom:1rem}
+.cd{width:9px;height:9px;border-radius:50%}
+.ctitle{flex:1;text-align:center;font-size:.72rem;color:var(--text3);font-family:monospace}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem;text-align:center;transition:all .3s}
+[data-theme="light"] .stat{background:linear-gradient(135deg,#f5f0ff,#fff0fb);border-color:rgba(124,58,237,.12)}
+.snum{font-family:var(--font-display);font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--cyan),#0080ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.snum.gold{background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;background-clip:text}
+.snum.green{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;background-clip:text}
+.slbl{font-size:.68rem;color:var(--text3);margin-top:1px}
+.blist{display:flex;flex-direction:column;gap:.5rem}
+.bitem{display:flex;align-items:center;gap:.65rem;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:.6rem .8rem;transition:all .3s}
+[data-theme="light"] .bitem{background:linear-gradient(135deg,#f8f5ff,#fff5fb);border-color:rgba(124,58,237,.1)}
+.bitem:hover{border-color:rgba(124,58,237,.3)}
+.bicon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.binfo{flex:1;min-width:0}
+.btitle{font-size:.78rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bmeta{font-size:.68rem;color:var(--text3)}
+.bprog{width:40px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0}
+.bpfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--pink))}
+.fcard{position:absolute;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.7rem .9rem;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+.fcard-notif{bottom:-16px;right:-16px;display:flex;align-items:center;gap:.55rem;animation:fc 4s ease-in-out infinite;animation-delay:-2s}
+.fcard-score{top:-16px;left:-16px;text-align:center;animation:fc 4s ease-in-out infinite}
+[data-theme="light"] .fcard{background:#fff;border-color:rgba(124,58,237,.2);box-shadow:0 12px 30px rgba(124,58,237,.15)}
+.ni{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,rgba(240,165,0,.2),rgba(255,60,172,.1));border:1px solid rgba(240,165,0,.3);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.scnum{font-family:var(--font-display);font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sclbl{font-size:.68rem;color:var(--text3)}
+@keyframes fc{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+/* MARQUEE */
+.marquee-sec{padding:2.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;position:relative;z-index:1;transition:background .3s}
+[data-theme="dark"] .marquee-sec{background:#080e1a}
+[data-theme="light"] .marquee-sec{background:linear-gradient(135deg,#e8e0ff,#fde8ff)}
+.mtrack{display:flex;gap:2.5rem;animation:mq 22s linear infinite;white-space:nowrap}
+.mitem{display:flex;align-items:center;gap:.5rem;color:var(--text3);font-size:.85rem;font-weight:500;flex-shrink:0}
+.mitem:nth-child(odd) i{color:var(--cyan)}
+.mitem:nth-child(even) i{color:var(--pink)}
+[data-theme="light"] .mitem:nth-child(odd) i{color:var(--purple)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* COMMON */
+section{position:relative;z-index:1}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.8rem;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.eyebrow::before{content:'';display:block;width:16px;height:1px;background:linear-gradient(90deg,var(--purple),var(--pink))}
+.sec-title{font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:.8rem;color:var(--text)}
+.sec-sub{color:var(--text2);font-size:.98rem;line-height:1.7;max-width:480px}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+/* FEATURES */
+.features-sec{padding:7rem 0}
+[data-theme="light"] .features-sec{background:linear-gradient(180deg,transparent,rgba(232,224,255,.3),transparent)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-top:4rem}
+.fcell{background:var(--bg-dark,#04080f);padding:2.2rem;transition:background .3s;position:relative;overflow:hidden}
+[data-theme="dark"] .fcell{background:#04080f}
+[data-theme="light"] .fcell{background:#ffffff}
+.fcell::after{content:'';position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 0%,rgba(124,58,237,.08) 0%,transparent 60%);transition:opacity .3s}
+.fcell:hover::after{opacity:1}
+[data-theme="light"] .fcell:hover{background:linear-gradient(135deg,#f8f4ff,#fff0fb)}
+[data-theme="dark"] .fcell:hover{background:#0c1424}
+.fcell:hover .ficon{box-shadow:0 0 20px rgba(124,58,237,.25);border-color:rgba(124,58,237,.3)}
+.ficon{width:44px;height:44px;border-radius:11px;border:1px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem;transition:all .3s}
+[data-theme="light"] .ficon{background:linear-gradient(135deg,#f5f0ff,#fff0fb)}
+.ftitle{font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:.5rem;letter-spacing:-.2px;color:var(--text)}
+.fdesc{color:var(--text2);font-size:.87rem;line-height:1.6}
+.ftag{display:inline-block;margin-top:.7rem;font-size:.7rem;font-weight:600;padding:.2rem .65rem;border-radius:50px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--purple)}
+.ftag.ai{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(124,58,237,.08));border-color:rgba(124,58,237,.2)}
+/* HOW IT WORKS */
+.hiw-sec{padding:7rem 0;transition:background .3s}
+[data-theme="dark"] .hiw-sec{background:#080e1a}
+[data-theme="light"] .hiw-sec{background:linear-gradient(135deg,#ede8ff,#fde8ff)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:4rem;position:relative}
+.steps::before{content:'';position:absolute;top:29px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--purple),var(--pink),transparent)}
+.step{text-align:center}
+.step-circle{width:58px;height:58px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;position:relative;z-index:1;transition:all .3s;box-shadow:0 0 0 1px var(--border2)}
+[data-theme="light"] .step-circle{background:#ffffff;box-shadow:0 4px 20px rgba(124,58,237,.15)}
+.step-circle::before{content:'';position:absolute;inset:-1px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--pink));z-index:-1;opacity:.4;transition:opacity .3s}
+.step:hover .step-circle::before{opacity:1}
+.step-circle span{font-family:var(--font-display);font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stitle{font-family:var(--font-display);font-size:.95rem;font-weight:700;margin-bottom:.4rem;letter-spacing:-.2px;color:var(--text)}
+.sdesc{color:var(--text3);font-size:.83rem;line-height:1.6}
+/* AI SECTION */
+.ai-sec{padding:7rem 0;position:relative;overflow:hidden}
+[data-theme="light"] .ai-sec{background:linear-gradient(135deg,rgba(232,224,255,.3),transparent,rgba(253,232,255,.3))}
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.terminal{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3),0 0 40px rgba(124,58,237,.08);transition:all .3s}
+[data-theme="light"] .terminal{background:#ffffff;box-shadow:0 24px 60px rgba(124,58,237,.18),0 0 40px rgba(255,60,172,.08)}
+.tbar{background:var(--surface2);padding:.7rem 1rem;display:flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--border);transition:background .3s}
+[data-theme="light"] .tbar{background:linear-gradient(135deg,#f5f0ff,#fff0fb)}
+.tbar span{font-size:.75rem;color:var(--text3);flex:1;text-align:center;font-family:monospace}
+.tbody{padding:1.3rem;font-family:monospace;font-size:.82rem}
+.tc{color:var(--text3)}.tk{color:var(--purple)}.tv{color:var(--gold)}.ts{color:var(--green)}
+[data-theme="light"] .tk{color:var(--purple)}.tl{margin-bottom:.35rem;display:flex;gap:.4rem}
+.tcursor{display:inline-block;width:7px;height:13px;background:var(--purple);margin-left:3px;animation:blnk 1s step-end infinite;vertical-align:middle}
+@keyframes blnk{0%,100%{opacity:1}50%{opacity:0}}
+.qprev{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.8rem;transition:all .3s}
+[data-theme="light"] .qprev{background:linear-gradient(135deg,#f8f4ff,#fff0fb);border-color:rgba(124,58,237,.12)}
+.qq{font-size:.82rem;color:var(--text);font-weight:500;margin-bottom:.7rem}
+.qopts{display:flex;flex-direction:column;gap:.35rem}
+.qopt{padding:.45rem .75rem;border-radius:7px;font-size:.78rem;border:1px solid transparent;transition:all .2s}
+.qopt.ok{background:linear-gradient(135deg,rgba(0,255,136,.08),rgba(124,58,237,.06));border-color:rgba(0,255,136,.25);color:var(--green)}
+.qopt.no{background:var(--surface2);color:var(--text2)}
+[data-theme="light"] .qopt.no{background:rgba(124,58,237,.04)}
+.ai-checks{display:flex;flex-direction:column;gap:.7rem}
+.ai-check{display:flex;align-items:center;gap:.65rem;color:var(--text2);font-size:.9rem}
+.ai-check i{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:1rem}
+/* TESTIMONIALS */
+.testi-sec{padding:7rem 0;transition:background .3s}
+[data-theme="dark"] .testi-sec{background:#080e1a}
+[data-theme="light"] .testi-sec{background:linear-gradient(135deg,#fde8ff,#e8e0ff)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:4rem}
+.tcard{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:1.6rem;transition:all .3s;position:relative;overflow:hidden}
+[data-theme="light"] .tcard{background:#ffffff;box-shadow:0 4px 20px rgba(124,58,237,.1);border-color:rgba(124,58,237,.12)}
+.tcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--pink),var(--cyan));transform:scaleX(0);transition:transform .3s;transform-origin:left}
+.tcard:hover{transform:translateY(-4px)}
+.tcard:hover::before{transform:scaleX(1)}
+[data-theme="light"] .tcard:hover{box-shadow:0 12px 40px rgba(124,58,237,.2)}
+.stars{font-size:.82rem;margin-bottom:.8rem;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ttxt{color:var(--text2);font-size:.88rem;line-height:1.7;margin-bottom:1rem;font-style:italic}
+.tauthor{display:flex;align-items:center;gap:.65rem}
+.tav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+.taname{font-size:.85rem;font-weight:600;color:var(--text)}.tarole{font-size:.73rem;color:var(--text3)}
+/* FAQ */
+.faq-sec{padding:7rem 0}
+[data-theme="light"] .faq-sec{background:linear-gradient(135deg,rgba(232,224,255,.2),transparent)}
+.flist{max-width:700px;margin:3.5rem auto 0}
+.fitem{border-bottom:1px solid var(--border)}
+.fq{width:100%;background:none;border:none;color:var(--text);text-align:left;padding:1.2rem 0;font-family:var(--font-display);font-size:.95rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.8rem;transition:all .2s;letter-spacing:-.2px}
+.fq:hover{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.fqi{font-size:1.1rem;color:var(--text3);transition:transform .3s,color .2s;flex-shrink:0}
+.fitem.open .fqi{transform:rotate(45deg);color:var(--purple)}
+.fa{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;color:var(--text2);font-size:.9rem;line-height:1.7}
+.fitem.open .fa{max-height:250px;padding-bottom:1.1rem}
+/* CTA */
+.cta-sec{padding:7rem 0;text-align:center;position:relative;overflow:hidden}
+.cta-sec::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.1) 0%,transparent 60%);pointer-events:none}
+.cbox{display:inline-block;background:var(--card-bg);border:1px solid var(--card-border);border-radius:22px;padding:4rem 3rem;position:relative;overflow:hidden;max-width:640px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.3);transition:all .3s}
+[data-theme="light"] .cbox{background:#ffffff;box-shadow:0 32px 80px rgba(124,58,237,.2);border-color:rgba(124,58,237,.2)}
+.cbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink),var(--gold))}
+.cbox h2{font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-1.5px;margin-bottom:.8rem;color:var(--text)}
+.cbox h2 span{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cbox p{color:var(--text2);margin-bottom:1.8rem;font-size:1rem}
+.cbtns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.cbtn{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:700;font-size:.95rem;padding:.85rem 1.8rem;border-radius:10px;text-decoration:none;transition:all .25s}
+.cbtn-main{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.35)}
+.cbtn-main:hover{box-shadow:0 8px 32px rgba(124,58,237,.55);transform:translateY(-2px);color:#fff}
+.cbtn-out{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.cbtn-out:hover{border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06);transform:translateY(-2px)}
+/* FOOTER */
+footer{padding:3.5rem 0 2rem;border-top:1px solid var(--border);position:relative;z-index:1;transition:all .3s}
+[data-theme="dark"] footer{background:#04080f}
+[data-theme="light"] footer{background:linear-gradient(135deg,#ede8ff,#fde8ff)}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+.fbrand{font-family:var(--font-display);font-weight:800;font-size:1.2rem;color:var(--text);display:flex;align-items:center;gap:.4rem;margin-bottom:.8rem;letter-spacing:-.4px}
+.fdesc2{color:var(--text3);font-size:.85rem;line-height:1.7;max-width:240px}
+.fctitle{font-family:var(--font-display);font-weight:700;font-size:.88rem;margin-bottom:1rem;color:var(--text);letter-spacing:-.2px}
+.flink{display:block;color:var(--text3);text-decoration:none;font-size:.85rem;margin-bottom:.5rem;transition:color .2s}
+.flink:hover{color:var(--purple)}
+.fbot{border-top:1px solid var(--border);padding-top:1.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.fcopy{color:var(--text3);font-size:.8rem}
+.fsocials{display:flex;gap:.6rem}
+.fsoc{width:32px;height:32px;border-radius:7px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;color:var(--text3);text-decoration:none;font-size:.85rem;transition:all .2s}
+.fsoc:hover{color:var(--purple);border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.08)}
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .nav-links{display:none}.nav-toggle{display:block}
+  .hero-inner{grid-template-columns:1fr;gap:2.5rem;text-align:center}
+  .hero-sub{margin:0 auto 1.8rem;max-width:100%}
+  .hero-btns{justify-content:center}.hero-trust{justify-content:center}
+  .hero-visual{max-width:480px;margin:0 auto}.fcard{display:none}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(2,1fr)}.steps::before{display:none}
+  .ai-grid{grid-template-columns:1fr}.tgrid{grid-template-columns:1fr 1fr}
+  .fgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .hero{padding:5.5rem 1rem 3.5rem}.hero h1{font-size:2.4rem;letter-spacing:-1.5px}
+  .btn-h1{font-size:.9rem;padding:.75rem 1.4rem}
+  .feat-grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr;gap:1.5rem}
+  .tgrid{grid-template-columns:1fr}.fgrid{grid-template-columns:1fr}
+  .cbox{padding:2.5rem 1.3rem}.nav-cta .btn-ghost{display:none}
+}
+@media(max-width:380px){
+  .hero h1{font-size:2rem}.hero-btns,.cbtns{flex-direction:column}
+  .btn-h1,.cbtn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><div class="logo-dot"></div>StudySphere</a>
+    <div class="nav-links">
+      <a href="#features">Features</a><a href="#how-it-works">How It Works</a>
+      <a href="#ai-sec">AI Tools</a><a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <button class="theme-btn" id="themeToggle" title="Toggle theme"><i class="bi bi-sun-fill" id="themeIcon"></i></button>
+      <a href="/login/" class="btn-ghost">Sign In</a>
+      <a href="/register/" class="btn-nav-main">Get Started →</a>
+      <button class="nav-toggle" id="navToggle"><i class="bi bi-list"></i></button>
+    </div>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <a href="#features">Features</a><a href="#how-it-works">How It Works</a>
+  <a href="#ai-sec">AI Tools</a><a href="#faq">FAQ</a>
+  <div class="nav-mobile-cta">
+    <a href="/login/" class="m-signin">Sign In</a>
+    <a href="/register/" class="m-start">Get Started</a>
+  </div>
+</div>
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge"><i class="bi bi-stars"></i>AI-Powered Academic Platform</div>
+      <h1>
+        <span class="h1-line1">Study</span><br>
+        <span class="h1-line2">Smarter.</span><br>
+        <span class="h1-line3">Score Higher.</span><br>
+        <span class="h1-line4">Stress Less.</span>
+      </h1>
+      <p class="hero-sub">StudySphere brings your textbooks, study planner, exam reminders, and AI-generated quizzes into one seamless platform — built for the modern student.</p>
+      <div class="hero-btns">
+        <a href="/register/" class="btn-h1 btn-h1-main"><i class="bi bi-rocket-takeoff"></i>Start for Free</a>
+        <a href="#features" class="btn-h1 btn-h1-out"><i class="bi bi-play-circle"></i>See Features</a>
+      </div>
+      <div class="hero-trust">
+        <div class="avatars">
+          <div class="av" style="background:linear-gradient(135deg,#00d4ff,#0080ff)"></div>
+          <div class="av" style="background:linear-gradient(135deg,#7c3aed,#ff3cac)"></div>
+          <div class="av" style="background:linear-gradient(135deg,#f0a500,#ff3cac)"></div>
+          <div class="av" style="background:linear-gradient(135deg,#00ff88,#00d4ff)"></div>
+        </div>
+        <p class="trust-txt">Join <span>hundreds of students</span> already studying smarter</p>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="fcard fcard-score"><div class="scnum">94%</div><div class="sclbl">Quiz Score</div></div>
+      <div class="hero-card">
+        <div class="ctopbar">
+          <div class="cd" style="background:#ff5f56"></div><div class="cd" style="background:#ffbd2e"></div><div class="cd" style="background:#27c93f"></div>
+          <div class="ctitle">studysphere.app/dashboard</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="snum">12</div><div class="slbl">Books</div></div>
+          <div class="stat"><div class="snum gold">3</div><div class="slbl">Exams</div></div>
+          <div class="stat"><div class="snum green">89%</div><div class="slbl">Avg Score</div></div>
+        </div>
+        <div class="blist">
+          <div class="bitem"><div class="bicon" style="background:linear-gradient(135deg,rgba(255,80,80,.15),rgba(255,60,172,.1))"><i class="bi bi-file-earmark-pdf-fill" style="color:#ff5050"></i></div><div class="binfo"><div class="btitle">Data Structures & Algorithms</div><div class="bmeta">CSC 301 · p.84</div></div><div class="bprog"><div class="bpfill" style="width:65%"></div></div></div>
+          <div class="bitem"><div class="bicon" style="background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(0,212,255,.1))"><i class="bi bi-file-earmark-pdf-fill" style="color:var(--purple)"></i></div><div class="binfo"><div class="btitle">Database Management</div><div class="bmeta">CSC 312 · p.42</div></div><div class="bprog"><div class="bpfill" style="width:30%"></div></div></div>
+          <div class="bitem"><div class="bicon" style="background:linear-gradient(135deg,rgba(240,165,0,.15),rgba(255,60,172,.1))"><i class="bi bi-file-earmark-pdf-fill" style="color:var(--gold)"></i></div><div class="binfo"><div class="btitle">Operating Systems</div><div class="bmeta">CSC 325 · p.120</div></div><div class="bprog"><div class="bpfill" style="width:80%"></div></div></div>
+        </div>
+      </div>
+      <div class="fcard fcard-notif"><div class="ni"><i class="bi bi-alarm" style="color:var(--gold)"></i></div><div><div style="font-size:.76rem;font-weight:600;color:var(--text)">CSC 301 Exam</div><div style="font-size:.68rem;color:var(--text3)">In 2 days · Hall A</div></div></div>
+    </div>
+  </div>
+</section>
+<div class="marquee-sec">
+  <div class="mtrack">
+    <div class="mitem"><i class="bi bi-file-earmark-pdf"></i>PDF Library</div><div class="mitem"><i class="bi bi-robot"></i>AI Quiz Generator</div><div class="mitem"><i class="bi bi-calendar3"></i>Study Planner</div><div class="mitem"><i class="bi bi-alarm"></i>Exam Reminders</div><div class="mitem"><i class="bi bi-bookmark-check"></i>Reading Progress</div><div class="mitem"><i class="bi bi-moon-stars"></i>Dark Mode</div><div class="mitem"><i class="bi bi-bell"></i>Smart Notifications</div><div class="mitem"><i class="bi bi-graph-up"></i>Progress Tracking</div><div class="mitem"><i class="bi bi-shield-check"></i>Secure & Private</div>
+    <div class="mitem"><i class="bi bi-file-earmark-pdf"></i>PDF Library</div><div class="mitem"><i class="bi bi-robot"></i>AI Quiz Generator</div><div class="mitem"><i class="bi bi-calendar3"></i>Study Planner</div><div class="mitem"><i class="bi bi-alarm"></i>Exam Reminders</div><div class="mitem"><i class="bi bi-bookmark-check"></i>Reading Progress</div><div class="mitem"><i class="bi bi-moon-stars"></i>Dark Mode</div><div class="mitem"><i class="bi bi-bell"></i>Smart Notifications</div><div class="mitem"><i class="bi bi-graph-up"></i>Progress Tracking</div><div class="mitem"><i class="bi bi-shield-check"></i>Secure & Private</div>
+  </div>
+</div>
+<section class="features-sec reveal" id="features">
+  <div class="container">
+    <div><div class="eyebrow">Features</div><h2 class="sec-title">Everything a student needs,<br>in one place.</h2><p class="sec-sub">No more switching between apps. StudySphere is your complete academic toolkit.</p></div>
+    <div class="feat-grid">
+      <div class="fcell"><div class="ficon"><i class="bi bi-file-earmark-pdf-fill" style="color:#ff6b6b"></i></div><div class="ftitle">PDF Library & Reader</div><div class="fdesc">Upload, organise, and read your textbooks directly in the browser. Bookmark your page and pick up where you left off.</div><span class="ftag">Phase 1</span></div>
+      <div class="fcell"><div class="ficon"><i class="bi bi-calendar3" style="color:var(--gold)"></i></div><div class="ftitle">Study Planner</div><div class="fdesc">Build a personalised weekly timetable. Set sessions, mark complete, and visualise your academic week at a glance.</div><span class="ftag">Phase 2</span></div>
+      <div class="fcell"><div class="ficon"><i class="bi bi-alarm" style="color:var(--pink)"></i></div><div class="ftitle">Exam Countdown</div><div class="fdesc">Register exam dates and the system tracks how many days remain, colour-coding urgency so nothing sneaks up on you.</div><span class="ftag">Phase 2</span></div>
+      <div class="fcell"><div class="ficon"><i class="bi bi-robot" style="color:var(--purple)"></i></div><div class="ftitle">AI Quiz Generator</div><div class="fdesc">Upload any PDF and our AI reads the content and instantly generates multiple-choice questions with detailed explanations.</div><span class="ftag ai">AI Powered</span></div>
+      <div class="fcell"><div class="ficon"><i class="bi bi-patch-question-fill" style="color:var(--green)"></i></div><div class="ftitle">Quiz Engine</div><div class="fdesc">Take timed quizzes, see instant results, and review every answer with explanations. Track performance over multiple attempts.</div><span class="ftag">Phase 3</span></div>
+      <div class="fcell"><div class="ficon"><i class="bi bi-bell-fill" style="color:var(--cyan)"></i></div><div class="ftitle">Smart Notifications</div><div class="fdesc">Receive intelligent reminders for study sessions, urgent exam alerts, and motivational messages personalised to your schedule.</div><span class="ftag">Phase 2</span></div>
+    </div>
+  </div>
+</section>
+<section class="hiw-sec reveal" id="how-it-works">
+  <div class="container">
+    <div style="text-align:center"><div class="eyebrow">How It Works</div><h2 class="sec-title">Up and running in minutes.</h2><p class="sec-sub" style="margin:0 auto">Four simple steps to transform the way you study.</p></div>
+    <div class="steps">
+      <div class="step"><div class="step-circle"><span>01</span></div><div class="stitle">Create your account</div><div class="sdesc">Sign up in seconds. No credit card, no friction. Just your name and email.</div></div>
+      <div class="step"><div class="step-circle"><span>02</span></div><div class="stitle">Upload your materials</div><div class="sdesc">Upload PDFs for any course. They go live after a quick admin review.</div></div>
+      <div class="step"><div class="step-circle"><span>03</span></div><div class="stitle">Plan your schedule</div><div class="sdesc">Add exam dates and study sessions. Reminders are handled automatically.</div></div>
+      <div class="step"><div class="step-circle"><span>04</span></div><div class="stitle">Generate AI quizzes</div><div class="sdesc">Let the AI turn your PDFs into quiz questions. Test yourself and track progress.</div></div>
+    </div>
+  </div>
+</section>
+<section class="ai-sec reveal" id="ai-sec">
+  <div class="container">
+    <div class="ai-grid">
+      <div>
+        <div class="eyebrow">AI Powered</div>
+        <h2 class="sec-title">Your PDFs become<br>instant quizzes.</h2>
+        <p style="color:var(--text2);font-size:.98rem;line-height:1.7;margin-bottom:1.5rem">Upload any textbook or lecture note. StudySphere's AI reads the content and generates relevant multiple-choice questions automatically — complete with explanations.</p>
+        <div class="ai-checks">
+          <div class="ai-check"><i class="bi bi-check-circle-fill"></i>Questions generated from real content</div>
+          <div class="ai-check"><i class="bi bi-check-circle-fill"></i>Detailed explanations for every answer</div>
+          <div class="ai-check"><i class="bi bi-check-circle-fill"></i>Works on any academic PDF</div>
+          <div class="ai-check"><i class="bi bi-check-circle-fill"></i>Results saved to your quiz history</div>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="tbar"><div class="cd" style="background:#ff5f56"></div><div class="cd" style="background:#ffbd2e"></div><div class="cd" style="background:#27c93f"></div><span>ai_quiz_generator.py</span></div>
+        <div class="tbody">
+          <div class="tl"><span class="tc"># AI reads your PDF and generates questions</span></div>
+          <div class="tl"><span class="tk">pdf</span><span style="color:var(--text3)"> = </span><span class="ts">"Data_Structures.pdf"</span></div>
+          <div class="tl"><span class="tk">questions</span><span style="color:var(--text3)"> = </span><span class="tv">generate_quiz</span>(pdf)</div>
+          <div class="tl">&nbsp;</div>
+          <div class="tl"><span class="tc"># Output ↓</span></div>
+          <div class="qprev">
+            <div class="qq">Q1. What is the time complexity of binary search?</div>
+            <div class="qopts">
+              <div class="qopt no">A. O(n)</div>
+              <div class="qopt ok">B. O(log n) ✓ Correct</div>
+              <div class="qopt no">C. O(n²)</div>
+              <div class="qopt no">D. O(1)</div>
+            </div>
+          </div>
+          <div class="tl" style="margin-top:.7rem"><span class="tc"># Generated 10 questions in 2.3s</span><span class="tcursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="testi-sec reveal">
+  <div class="container">
+    <div style="text-align:center"><div class="eyebrow">Testimonials</div><h2 class="sec-title">What students are saying.</h2></div>
+    <div class="tgrid">
+      <div class="tcard"><div class="stars">★★★★★</div><div class="ttxt">"The AI quiz generator alone is worth everything. I uploaded my lecture notes and had 20 practice questions ready in seconds. My exam scores improved significantly."</div><div class="tauthor"><div class="tav" style="background:linear-gradient(135deg,#7c3aed,#ff3cac);color:#fff">AO</div><div><div class="taname">Adaeze Okonkwo</div><div class="tarole">Computer Science, 300L</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><div class="ttxt">"I used to lose my lecture notes constantly. Now everything is in one place and the exam countdown keeps me from forgetting anything important."</div><div class="tauthor"><div class="tav" style="background:linear-gradient(135deg,#f0a500,#ff3cac);color:#fff">EM</div><div><div class="taname">Emmanuel Musa</div><div class="tarole">Electrical Engineering, 200L</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><div class="ttxt">"The study planner changed everything for me. I plan my whole week, mark sessions done, and the system reminds me when I'm falling behind. Game-changing."</div><div class="tauthor"><div class="tav" style="background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000">FA</div><div><div class="taname">Fatimah Abdullahi</div><div class="tarole">Biochemistry, 400L</div></div></div></div>
+    </div>
+  </div>
+</section>
+<section class="faq-sec reveal" id="faq">
+  <div class="container">
+    <div style="text-align:center"><div class="eyebrow">FAQ</div><h2 class="sec-title">Frequently asked questions.</h2></div>
+    <div class="flist">
+      <div class="fitem"><button class="fq">Is StudySphere free to use?<i class="bi bi-plus fqi"></i></button><div class="fa">Yes, completely free for all students. Upload materials, use the planner, register exam dates, and access all core features at no cost.</div></div>
+      <div class="fitem"><button class="fq">How does the AI quiz generator work?<i class="bi bi-plus fqi"></i></button><div class="fa">When you upload a PDF, our AI extracts the text and generates multiple-choice questions based on the actual content. Each question comes with four options, the correct answer, and a detailed explanation.</div></div>
+      <div class="fitem"><button class="fq">What file types can I upload?<i class="bi bi-plus fqi"></i></button><div class="fa">Currently StudySphere supports PDF files up to 50MB. This covers textbooks, lecture slides, past questions, and any other academic material.</div></div>
+      <div class="fitem"><button class="fq">Will my uploaded materials be visible to everyone?<i class="bi bi-plus fqi"></i></button><div class="fa">Uploads go through admin review before appearing in the public library. Once approved they are visible to all students.</div></div>
+      <div class="fitem"><button class="fq">Can I use StudySphere on my phone?<i class="bi bi-plus fqi"></i></button><div class="fa">Absolutely. StudySphere is fully responsive and works smoothly on mobile phones, tablets, and desktops.</div></div>
+    </div>
+  </div>
+</section>
+<section class="cta-sec reveal">
+  <div class="container">
+    <div class="cbox">
+      <h2>Ready to study<br><span>smarter?</span></h2>
+      <p>Create your free account in seconds and start building better study habits today.</p>
+      <div class="cbtns">
+        <a href="/register/" class="cbtn cbtn-main"><i class="bi bi-person-plus"></i>Create Free Account</a>
+        <a href="/login/" class="cbtn cbtn-out"><i class="bi bi-box-arrow-in-right"></i>Sign In</a>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="container">
+    <div class="fgrid">
+      <div><div class="fbrand"><div class="logo-dot"></div>StudySphere</div><p class="fdesc2">An integrated academic platform helping students manage study materials, schedules, and exam preparation.</p></div>
+      <div><div class="fctitle">Platform</div><a href="#features" class="flink">Features</a><a href="#how-it-works" class="flink">How It Works</a><a href="#ai-sec" class="flink">AI Tools</a><a href="/register/" class="flink">Get Started</a></div>
+      <div><div class="fctitle">Account</div><a href="/login/" class="flink">Login</a><a href="/register/" class="flink">Register</a><a href="/profile/" class="flink">Profile</a><a href="/password-reset/" class="flink">Reset Password</a></div>
+      <div><div class="fctitle">Support</div><a href="#faq" class="flink">FAQ</a><a href="#" class="flink">Contact</a><a href="#" class="flink">Privacy Policy</a><a href="#" class="flink">Terms of Use</a></div>
+    </div>
+    <div class="fbot">
+      <div class="fcopy">© 2025 StudySphere. All rights reserved.</div>
+      <div class="fsocials"><a href="#" class="fsoc"><i class="bi bi-twitter-x"></i></a><a href="#" class="fsoc"><i class="bi bi-github"></i></a><a href="#" class="fsoc"><i class="bi bi-linkedin"></i></a></div>
+    </div>
+  </div>
+</footer>
+<script>
+const themeToggle=document.getElementById('themeToggle');
+const themeIcon=document.getElementById('themeIcon');
+const html=document.documentElement;
+const saved=localStorage.getItem('landing-theme')||'dark';
+html.setAttribute('data-theme',saved);
+themeIcon.className=saved==='dark'?'bi bi-sun-fill':'bi bi-moon-stars-fill';
+themeToggle.addEventListener('click',()=>{
+  const current=html.getAttribute('data-theme');
+  const next=current==='dark'?'light':'dark';
+  html.setAttribute('data-theme',next);
+  localStorage.setItem('landing-theme',next);
+  themeIcon.className=next==='dark'?'bi bi-sun-fill':'bi bi-moon-stars-fill';
+});
+window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50)});
+const toggle=document.getElementById('navToggle');const mob=document.getElementById('navMobile');
+toggle.addEventListener('click',()=>{mob.classList.toggle('open');toggle.innerHTML=mob.classList.contains('open')?'<i class="bi bi-x"></i>':'<i class="bi bi-list"></i>'});
+mob.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mob.classList.remove('open');toggle.innerHTML='<i class="bi bi-list"></i>'}));
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
+document.querySelectorAll('.fq').forEach(btn=>{btn.addEventListener('click',()=>{const item=btn.parentElement;const was=item.classList.contains('open');document.querySelectorAll('.fitem').forEach(i=>i.classList.remove('open'));if(!was)item.classList.add('open')})});
+</script>
+</body>
+</html>

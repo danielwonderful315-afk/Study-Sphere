@@ -1,0 +1,58 @@
+{% extends 'base.html' %} 
+{% block title %}{{ book.title }} — StudySphere
+{%endblock %} {% block content %}
+<div class="row g-4">
+  <div class="col-md-3 text-center">
+    {% if book.cover_image %}
+    <img
+      src="{{ book.cover_image.url }}"
+      class="rounded shadow img-fluid mb-3"
+      style="max-height: 260px; object-fit: cover"
+    />
+    {% else %}
+    <div
+      class="mx-auto rounded d-flex align-items-center justify-content-center shadow"
+      style="width: 160px; height: 210px; background: var(--light-bg)"
+    >
+      <i
+        class="bi bi-file-earmark-pdf-fill text-danger"
+        style="font-size: 4rem"
+      ></i>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-md-9">
+    <span class="badge rounded-pill mb-2" style="background: var(--accent)"
+      >{{ book.course_code }}</span
+    >
+    <h3 class="fw-bold">{{ book.title }}</h3>
+    <p class="text-muted">
+      Uploaded by
+      <strong
+        >{{ book.uploader.get_full_name|default:book.uploader.username
+        }}</strong
+      >
+      on {{ book.upload_date|date:"F j, Y" }}
+    </p>
+    {% if book.description %}
+    <p>{{ book.description }}</p>
+    {% endif %} {% if bookmark.page > 1 %}
+    <div class="alert alert-info py-2 small">
+      <i class="bi bi-bookmark-check me-1"></i>
+      You were last on <strong>page {{ bookmark.page }}</strong>.
+      <a href="{% url 'book_read' book.pk %}" class="alert-link"
+        >Continue reading</a
+      >
+    </div>
+    {% endif %}
+
+    <div class="d-flex gap-2 mt-3">
+      <a href="{% url 'book_read' book.pk %}" class="btn btn-primary px-4 py-2">
+        <i class="bi bi-book-open me-2"></i>
+        {% if bookmark.page > 1 %}Continue Reading{% else %}Start Reading
+        {% endif %}
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

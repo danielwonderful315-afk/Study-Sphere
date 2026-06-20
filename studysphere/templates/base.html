@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StudySphere{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --accent: #00d4ff;
+            --gold: #f0a500;
+            --pink: #ff3cac;
+            --green: #00ff88;
+            --purple: #7c3aed;
+            --cyan: #00d4ff;
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --navbar-height: 60px;
+            --sidebar-width: 230px;
+        }
+        [data-theme="dark"] {
+            --bg: #04080f;
+            --bg2: #080e1a;
+            --surface: #0c1424;
+            --surface2: #111827;
+            --border: rgba(255,255,255,.07);
+            --border2: rgba(255,255,255,.12);
+            --text: #e8edf5;
+            --text2: #8899bb;
+            --text3: #4a5a7a;
+            --nav-bg: rgba(4,8,15,.97);
+            --card-bg: #0c1424;
+            --card-border: rgba(255,255,255,.1);
+            --sidebar-bg: #060d1a;
+        }
+        [data-theme="light"] {
+            --bg: #f2eeff;
+            --bg2: #e8e0ff;
+            --surface: #ffffff;
+            --surface2: #f5f0ff;
+            --border: rgba(124,58,237,.1);
+            --border2: rgba(124,58,237,.2);
+            --text: #0d0820;
+            --text2: #3d2a6b;
+            --text3: #8878aa;
+            --nav-bg: rgba(242,238,255,.97);
+            --card-bg: #ffffff;
+            --card-border: rgba(124,58,237,.15);
+            --sidebar-bg: #1a0533;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-weight: 400;
+            line-height: 1.6;
+            margin: 0; padding: 0;
+            transition: background-color .3s, color .3s;
+        }
+        [data-theme="light"] body { background: linear-gradient(135deg,#f2eeff 0%,#e8f4ff 40%,#fff0fb 100%) fixed; }
+
+        /* GRID BG */
+        .grid-bg {
+            position: fixed; inset: 0;
+            background-image: linear-gradient(rgba(124,58,237,.03) 1px,transparent 1px), linear-gradient(90deg,rgba(124,58,237,.03) 1px,transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none; z-index: 0;
+            mask-image: radial-gradient(ellipse 80% 80% at 20% 50%,black 20%,transparent 100%);
+        }
+        [data-theme="light"] .grid-bg { opacity: .5; }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--nav-bg) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1050; height: var(--navbar-height);
+            transition: background .3s;
+        }
+        .navbar-brand {
+            font-family: var(--font-display);
+            font-weight: 800; font-size: 1.3rem;
+            letter-spacing: -.5px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .navbar-brand i { -webkit-text-fill-color: initial; color: var(--purple); }
+        .nav-link { color: var(--text2) !important; transition: color .2s !important; font-size: .9rem; }
+        .nav-link:hover { color: var(--text) !important; }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            top: var(--navbar-height); left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            background: var(--sidebar-bg);
+            padding-top: 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+            border-right: 1px solid var(--border);
+            transition: background .3s;
+            scrollbar-width: none;
+        }
+        .sidebar::-webkit-scrollbar { display: none; }
+        .sidebar::before {
+            content: '';
+            position: absolute; top: 0; right: 0;
+            width: 1px; height: 100%;
+            background: linear-gradient(180deg, transparent, var(--purple), var(--pink), transparent);
+            opacity: .3;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,.55);
+            padding: .6rem 1.2rem;
+            border-radius: 8px;
+            margin: 2px .5rem;
+            display: flex; align-items: center; gap: .65rem;
+            font-size: .88rem; font-weight: 500;
+            transition: all .2s;
+            font-family: var(--font-body);
+        }
+        .sidebar .nav-link i { font-size: .95rem; width: 18px; text-align: center; }
+        .sidebar .nav-link:hover {
+            color: #fff !important;
+            background: rgba(124,58,237,.2);
+        }
+        .sidebar .nav-link.active {
+            color: #fff !important;
+            background: linear-gradient(135deg, rgba(124,58,237,.4), rgba(255,60,172,.2));
+            border: 1px solid rgba(124,58,237,.3);
+        }
+        .sidebar-label {
+            font-size: .65rem; color: rgba(255,255,255,.25);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            padding: .8rem 1.2rem .3rem; display: block;
+            font-weight: 600;
+        }
+
+        /* MAIN WRAPPER */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--navbar-height);
+            min-height: calc(100vh - var(--navbar-height));
+            padding: 2rem;
+            background: var(--bg);
+            transition: background .3s;
+        }
+        .main-wrapper-full {
+            margin-top: var(--navbar-height);
+            min-height: calc(100vh - var(--navbar-height));
+            padding: 2rem;
+            background: var(--bg);
+            transition: background .3s;
+        }
+        [data-theme="light"] .main-wrapper,
+        [data-theme="light"] .main-wrapper-full {
+            background: linear-gradient(135deg,#f2eeff 0%,#e8f4ff 40%,#fff0fb 100%);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.2);
+            transition: all .3s;
+        }
+        [data-theme="light"] .card { box-shadow: 0 4px 20px rgba(124,58,237,.08); }
+        .card:hover { border-color: rgba(124,58,237,.3); }
+        .card-header {
+            background: linear-gradient(135deg, rgba(124,58,237,.3), rgba(255,60,172,.15));
+            border-bottom: 1px solid var(--border2);
+            color: var(--text);
+            border-radius: 14px 14px 0 0 !important;
+            font-family: var(--font-display);
+            font-weight: 700;
+        }
+        [data-theme="light"] .card-header {
+            background: linear-gradient(135deg, #7c3aed, #ff3cac);
+            color: #fff;
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border: none;
+            font-family: var(--font-display);
+            font-weight: 700;
+            transition: all .25s;
+        }
+        .btn-primary:hover { box-shadow: 0 4px 20px rgba(124,58,237,.4); transform: translateY(-1px); background: linear-gradient(135deg, #6d28d9, #e91e8c); border: none; }
+        .btn-outline-primary { border-color: rgba(124,58,237,.4); color: var(--purple); }
+        .btn-outline-primary:hover { background: rgba(124,58,237,.1); border-color: var(--purple); color: var(--purple); }
+        .btn-outline-danger { border-color: rgba(239,68,68,.4); color: #ef4444; }
+        .btn-outline-danger:hover { background: rgba(239,68,68,.1); border-color: #ef4444; color: #ef4444; }
+        .btn-outline-success { border-color: rgba(0,255,136,.3); color: var(--green); }
+        .btn-outline-success:hover { background: rgba(0,255,136,.1); border-color: var(--green); color: var(--green); }
+        .btn-outline-secondary { border-color: var(--border2); color: var(--text2); }
+        .btn-outline-secondary:hover { background: rgba(255,255,255,.05); color: var(--text); }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--pink)); border: none; color: #fff; font-family: var(--font-display); font-weight: 700; }
+        .btn-gold:hover { box-shadow: 0 4px 20px rgba(240,165,0,.3); color: #fff; }
+
+        /* ALERTS */
+        .alert { border-radius: 10px; border: 1px solid var(--border2); }
+        .alert-success { background: rgba(0,255,136,.08); border-color: rgba(0,255,136,.2); color: var(--green); }
+        .alert-danger { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: #ef4444; }
+        .alert-info { background: rgba(0,212,255,.08); border-color: rgba(0,212,255,.2); color: var(--cyan); }
+        .alert-warning { background: rgba(240,165,0,.08); border-color: rgba(240,165,0,.2); color: var(--gold); }
+        [data-theme="light"] .alert-success { color: #16a34a; }
+        [data-theme="light"] .alert-danger { color: #dc2626; }
+        [data-theme="light"] .alert-info { color: #0369a1; }
+
+        /* BADGES */
+        .badge { font-family: var(--font-display); }
+
+        /* NOTIF BADGE */
+        .notif-badge { position: relative; }
+        .notif-badge .badge { position: absolute; top: -5px; right: -8px; font-size: .6rem; }
+
+        /* FORMS */
+        .form-control, .form-select {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            color: var(--text);
+            border-radius: 8px;
+            transition: all .2s;
+        }
+        .form-control:focus, .form-select:focus {
+            background: var(--surface2);
+            border-color: rgba(124,58,237,.5);
+            color: var(--text);
+            box-shadow: 0 0 0 3px rgba(124,58,237,.15);
+        }
+        [data-theme="light"] .form-control, [data-theme="light"] .form-select {
+            background: #fff;
+            border-color: rgba(124,58,237,.2);
+            color: var(--text);
+        }
+        .form-label { color: var(--text2); font-size: .88rem; font-weight: 500; }
+
+        /* LIST GROUPS */
+        .list-group-item {
+            background: var(--card-bg);
+            border-color: var(--border);
+            color: var(--text);
+            transition: all .2s;
+        }
+        .list-group-item-action:hover { background: rgba(124,58,237,.08); color: var(--text); }
+        [data-theme="light"] .list-group-item { background: #fff; }
+
+        /* MODAL */
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            color: var(--text);
+        }
+        .modal-header {
+            background: linear-gradient(135deg, rgba(124,58,237,.2), rgba(255,60,172,.1));
+            border-bottom: 1px solid var(--border);
+            border-radius: 16px 16px 0 0;
+        }
+        [data-theme="light"] .modal-header { background: linear-gradient(135deg, #7c3aed, #ff3cac); color: #fff; }
+        [data-theme="light"] .modal-header .btn-close { filter: invert(1); }
+        .modal-footer { border-top: 1px solid var(--border); }
+
+        /* PROFILE DROPDOWN */
+        .profile-dropdown {
+            min-width: 280px; padding: 0;
+            border-radius: 14px; overflow: hidden;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 16px 48px rgba(0,0,0,.4);
+            background: var(--card-bg);
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #3b1a6e, #7c3aed, #ff3cac);
+            padding: 1.2rem; text-align: center; color: white;
+        }
+        .profile-avatar {
+            width: 70px; height: 70px; border-radius: 50%;
+            object-fit: cover; border: 3px solid rgba(255,255,255,.4);
+            margin-bottom: .5rem;
+        }
+        .profile-avatar-placeholder {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: rgba(255,255,255,.15);
+            border: 3px solid rgba(255,255,255,.4);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto .5rem auto; font-size: 2rem; color: white;
+        }
+        .profile-dropdown .dropdown-item {
+            padding: .65rem 1.2rem;
+            display: flex; align-items: center; gap: .75rem;
+            color: var(--text); font-size: .9rem;
+            background: transparent; transition: background .2s;
+        }
+        .profile-dropdown .dropdown-item:hover { background: rgba(124,58,237,.1); }
+        .profile-dropdown .dropdown-item i { font-size: 1rem; width: 20px; text-align: center; }
+        .profile-dropdown .dropdown-divider { border-color: var(--border); margin: 0; }
+
+        /* THEME TOGGLE */
+        .theme-toggle-item {
+            padding: .65rem 1.2rem;
+            display: flex; align-items: center; justify-content: space-between;
+            background: transparent;
+        }
+        .theme-toggle-label { display: flex; align-items: center; gap: .75rem; color: var(--text); font-size: .9rem; }
+        .theme-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .theme-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,.1); border-radius: 24px; transition: .3s;
+            border: 1px solid var(--border2);
+        }
+        .theme-slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px;
+            left: 2px; bottom: 2px; background: var(--text2);
+            border-radius: 50%; transition: .3s;
+        }
+        input:checked + .theme-slider { background: linear-gradient(135deg, var(--purple), var(--pink)); border-color: transparent; }
+        input:checked + .theme-slider:before { transform: translateX(20px); background: white; }
+
+        /* NAV AVATAR */
+        .nav-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(124,58,237,.4); }
+        .nav-avatar-placeholder {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, rgba(124,58,237,.3), rgba(255,60,172,.2));
+            border: 2px solid rgba(124,58,237,.4);
+            display: flex; align-items: center; justify-content: center; font-size: .9rem; color: white;
+        }
+
+        /* TEXT MUTED */
+        .text-muted { color: var(--text3) !important; }
+
+        /* PROGRESS BARS */
+        .progress { background: var(--border); border-radius: 4px; }
+        .progress-bar { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+
+        /* BREADCRUMB / SECTION TITLES */
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800; font-size: 1.6rem;
+            letter-spacing: -.5px; color: var(--text);
+        }
+        .page-subtitle { color: var(--text2); font-size: .92rem; }
+
+        /* STAT CARDS */
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.3rem;
+            text-align: center;
+            transition: all .3s;
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--pink));
+            opacity: 0; transition: opacity .3s;
+        }
+        .stat-card:hover { border-color: rgba(124,58,237,.3); }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 1.8rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label { color: var(--text3); font-size: .8rem; margin-top: 2px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-wrapper { margin-left: 0; padding: 1rem; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <i class="bi bi-book-half me-2"></i>StudySphere
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="bi bi-list" style="color:var(--text);font-size:1.3rem;"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link notif-badge" href="{% url 'notifications' %}">
+                        <i class="bi bi-bell fs-5"></i>
+                        {% if unread_count %}
+                        <span class="badge bg-danger rounded-pill">{{ unread_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 p-1 pe-2"
+                       href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="nav-avatar" alt="Profile">
+                        {% else %}
+                        <div class="nav-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+                        {% endif %}
+                        <span class="d-none d-md-inline" style="font-size:.88rem;color:var(--text);">
+                            {{ user.first_name|default:user.username }}
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
+                        <li>
+                            <div class="profile-header">
+                                {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" class="profile-avatar" alt="Profile">
+                                {% else %}
+                                <div class="profile-avatar-placeholder"><i class="bi bi-person-fill"></i></div>
+                                {% endif %}
+                                <div class="fw-bold" style="font-size:1rem;font-family:'Syne',sans-serif;">{{ user.get_full_name|default:user.username }}</div>
+                                <div style="font-size:.8rem; opacity:.8;">@{{ user.username }}</div>
+                                {% if user.matric_number %}
+                                <div style="font-size:.75rem; opacity:.65; margin-top:2px;">{{ user.matric_number }}</div>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'profile' %}">
+                                <i class="bi bi-person-gear" style="color:var(--purple);"></i> Edit Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'password_reset' %}">
+                                <i class="bi bi-key" style="color:var(--gold);"></i> Change Password
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <div class="theme-toggle-item">
+                                <div class="theme-toggle-label">
+                                    <i class="bi bi-moon-stars" style="color:var(--purple);width:20px;text-align:center;"></i>
+                                    Dark Mode
+                                </div>
+                                <label class="theme-switch">
+                                    <input type="checkbox" id="themeToggle">
+                                    <span class="theme-slider"></span>
+                                </label>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="bi bi-box-arrow-right" style="color:#ef4444;"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                <li class="nav-item">
+                    <a href="{% url 'register' %}" class="btn btn-sm btn-primary px-3">Get Started</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% if user.is_authenticated %}
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <ul class="nav flex-column">
+        <span class="sidebar-label">Main</span>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                <i class="bi bi-grid-fill"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if 'book' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'book_list' %}">
+              <i class="bi bi-book-fill"></i> Library
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'book_upload' %}active{% endif %}" href="{% url 'book_upload' %}">
+                <i class="bi bi-cloud-upload-fill"></i> Upload
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'my_books' %}active{% endif %}" href="{% url 'my_books' %}">
+                <i class="bi bi-collection-fill"></i> My Books
+            </a>
+        </li>
+        <span class="sidebar-label">Study Tools</span>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}" href="{% url 'schedule' %}">
+                <i class="bi bi-calendar3-fill"></i> Planner
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'exam_list' %}active{% endif %}" href="{% url 'exam_list' %}">
+                <i class="bi bi-mortarboard-fill"></i> Exams
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}">
+                <i class="bi bi-bell-fill"></i> Notifications
+            </a>
+        </li>
+        <span class="sidebar-label">Coming Soon</span>
+        <li class="nav-item">
+            <a class="nav-link" href="#" style="opacity:.35;cursor:not-allowed;">
+                <i class="bi bi-patch-question-fill"></i> Quizzes
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="main-wrapper">
+{% else %}
+<div class="main-wrapper-full">
+{% endif %}
+
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const toggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const saved = localStorage.getItem('app-theme') || 'dark';
+    html.setAttribute('data-theme', saved);
+    if (toggle) toggle.checked = saved === 'light';
+    if (toggle) {
+        toggle.addEventListener('change', function() {
+            const theme = this.checked ? 'light' : 'dark';
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('app-theme', theme);
+        });
+    }
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

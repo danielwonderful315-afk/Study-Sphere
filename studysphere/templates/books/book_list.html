@@ -1,0 +1,98 @@
+{% extends 'base.html' %} {% block title %}Library — StudySphere{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-books me-2" style="color: var(--accent)"></i>Book Library
+  </h4>
+  <a href="{% url 'book_upload' %}" class="btn btn-primary">
+    <i class="bi bi-cloud-upload me-1"></i> Upload Book
+  </a>
+</div>
+
+<!-- Search Bar -->
+<form method="get" class="mb-4">
+  <div class="input-group">
+    <span class="input-group-text bg-white border-end-0">
+      <i class="bi bi-search text-muted"></i>
+    </span>
+    <input
+      type="text"
+      name="q"
+      value="{{ query }}"
+      class="form-control border-start-0 ps-0"
+      placeholder="Search by title or course code..."
+    />
+    <button class="btn btn-primary" type="submit">Search</button>
+    {% if query %}
+    <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+{% if query %}
+<p class="text-muted mb-3">
+  Showing results for <strong>"{{ query }}"</strong> — {{ books.count }} book(s)
+  found.
+</p>
+{% endif %} {% if books %}
+<div class="row g-4">
+  {% for book in books %}
+  <div class="col-md-4 col-lg-3">
+    <div class="card h-100 position-relative">
+      <!-- Cover -->
+      <div class="text-center pt-4 pb-2">
+        {% if book.cover_image %}
+        <img
+          src="{{ book.cover_image.url }}"
+          class="rounded"
+          style="height: 120px; object-fit: cover; width: 90px"
+        />
+        {% else %}
+        <div
+          class="mx-auto rounded d-flex align-items-center justify-content-center"
+          style="width: 90px; height: 120px; background: var(--light-bg)"
+        >
+          <i
+            class="bi bi-file-earmark-pdf-fill text-danger"
+            style="font-size: 2.5rem"
+          ></i>
+        </div>
+        {% endif %}
+      </div>
+      <div class="card-body text-center pt-2">
+        <h6 class="fw-bold mb-1">{{ book.title|truncatechars:40 }}</h6>
+        <span class="badge rounded-pill mb-2" style="background: var(--accent)"
+          >{{ book.course_code }}</span
+        >
+        <p class="text-muted small">{{ book.description|truncatechars:60 }}</p>
+      </div>
+      <div class="card-footer bg-white border-0 pb-3 d-flex gap-2">
+        <a
+          href="{% url 'book_detail' book.pk %}"
+          class="btn btn-outline-primary btn-sm flex-grow-1"
+          >Details</a
+        >
+        <a
+          href="{% url 'book_read' book.pk %}"
+          class="btn btn-primary btn-sm flex-grow-1"
+        >
+          <i class="bi bi-book-open me-1"></i>Read
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-search display-3 d-block mb-3"></i>
+  <h5>No books found</h5>
+  <p>
+    {% if query %}Try a different search term.{% else %}The library is empty. Be
+    the first to upload!{% endif %}
+  </p>
+  <a href="{% url 'book_upload' %}" class="btn btn-primary mt-2"
+    >Upload a Book</a
+  >
+</div>
+{% endif %} {% endblock %}

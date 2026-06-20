@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - StudySphere{% endblock %}
+{% block content %}
+<!-- Welcome Banner -->
+<div
+  class="p-4 mb-4 rounded-3"
+  style="
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+  "
+>
+  <h4 class="fw-bold mb-1">
+    Welcome back, {{ user.first_name|default:user.username }}! 👋
+  </h4>
+  <p class="mb-0 opacity-75">Ready to study today? Keep pushing forward.</p>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card text-center p-3">
+      <i class="bi bi-books fs-2 mb-2" style="color: var(--accent)"></i>
+      <h5 class="fw-bold mb-0">{{ my_uploads.count }}</h5>
+      <small class="text-muted">My Uploads</small>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center p-3">
+      <i class="bi bi-bookmark-heart fs-2 mb-2" style="color: var(--gold)"></i>
+      <h5 class="fw-bold mb-0">{{ my_bookmarks.count }}</h5>
+      <small class="text-muted">Bookmarked</small>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center p-3">
+      <i class="bi bi-bell fs-2 mb-2 text-danger"></i>
+      <h5 class="fw-bold mb-0">{{ unread_count }}</h5>
+      <small class="text-muted">Notifications</small>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center p-3">
+      <i class="bi bi-patch-question fs-2 mb-2 text-success"></i>
+      <h5 class="fw-bold mb-0">—</h5>
+      <small class="text-muted">Quizzes (Soon)</small>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Recent Books -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center py-3"
+      >
+        <h6 class="mb-0">
+          <i class="bi bi-journal-bookmark me-2"></i>Recent Library Additions
+        </h6>
+        <a href="{% url 'book_list' %}" class="btn btn-sm btn-gold">View All</a>
+      </div>
+      <div class="card-body p-0">
+        {% if recent_books %}
+        <div class="list-group list-group-flush">
+          {% for book in recent_books %}
+          <a
+            href="{% url 'book_detail' book.pk %}"
+            class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 px-4"
+          >
+            <div class="rounded p-2" style="background: var(--light-bg)">
+              <i class="bi bi-file-earmark-pdf-fill text-danger fs-4"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">{{ book.title }}</div>
+              <small class="text-muted">{{ book.course_code }}</small>
+            </div>
+            <small class="text-muted">{{ book.upload_date|date:"M d" }}</small>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-inbox display-4 d-block mb-2"></i>
+          No books in the library yet.
+          <a href="{% url 'book_upload' %}" class="d-block mt-2"
+            >Be the first to upload one!</a
+          >
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Continue Reading -->
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header py-3">
+        <h6 class="mb-0">
+          <i class="bi bi-bookmark-check me-2"></i>Continue Reading
+        </h6>
+      </div>
+      <div class="card-body p-0">
+        {% if my_bookmarks %}
+        <div class="list-group list-group-flush">
+          {% for bm in my_bookmarks %}
+          <a
+            href="{% url 'book_read' bm.book.pk %}"
+            class="list-group-item list-group-item-action py-3 px-4"
+          >
+            <div class="fw-semibold small">
+              {{ bm.book.title|truncatechars:35 }}
+            </div>
+            <small class="text-muted">Page {{ bm.page }}</small>
+            <div class="mt-1 progress" style="height: 4px">
+              <div
+                class="progress-bar"
+                style="width: 40%; background: var(--accent)"
+              ></div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-4 px-3">
+          <i class="bi bi-bookmark display-5 d-block mb-2"></i>
+          <small>No reading in progress. Visit the library to start!</small>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Notifications - StudySphere{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-bell me-2" style="color:var(--accent);"></i>Notifications</h4>
+    {% if notifications %}
+    <a href="{% url 'notifications_clear' %}"
+       class="btn btn-outline-danger btn-sm"
+       onclick="return confirm('Clear all notifications?')">
+        <i class="bi bi-trash me-1"></i>Clear All
+    </a>
+    {% endif %}
+</div>
+
+<style>
+.notif-exam       { background: #fde8e8; }
+.notif-study      { background: #e8f5ee; }
+.notif-motivation { background: #fef3cd; }
+.notif-system     { background: var(--light-bg); }
+</style>
+
+<div class="card">
+    <div class="card-body p-0">
+        {% if notifications %}
+        <div class="list-group list-group-flush">
+            {% for notif in notifications %}
+            <div class="list-group-item px-4 py-3 d-flex align-items-start gap-3">
+                <!-- Icon -->
+                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 mt-1
+                     {% if notif.notif_type == 'exam' %}notif-exam
+                     {% elif notif.notif_type == 'study' %}notif-study
+                     {% elif notif.notif_type == 'motivation' %}notif-motivation
+                     {% else %}notif-system{% endif %}"
+                     style="width:38px; height:38px;">
+                    {% if notif.notif_type == 'exam' %}
+                    <i class="bi bi-alarm text-danger"></i>
+                    {% elif notif.notif_type == 'study' %}
+                    <i class="bi bi-book text-success"></i>
+                    {% elif notif.notif_type == 'motivation' %}
+                    <i class="bi bi-star-fill text-warning"></i>
+                    {% else %}
+                    <i class="bi bi-info-circle" style="color:var(--accent);"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Message -->
+                <div class="flex-grow-1">
+                    <div style="font-size:.95rem;">{{ notif.message }}</div>
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>{{ notif.created_at|timesince }} ago
+                    </small>
+                </div>
+
+                <!-- Dismiss -->
+                <a href="{% url 'notification_delete' notif.pk %}"
+                   class="btn btn-sm btn-outline-danger flex-shrink-0"
+                   title="Dismiss">
+                    <i class="bi bi-x"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-bell-slash display-4 d-block mb-3"></i>
+            <h6>You're all caught up!</h6>
+            <p class="small">Notifications will appear here when you register exam dates or study sessions.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

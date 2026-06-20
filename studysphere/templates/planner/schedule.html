@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %}Study Planner - StudySphere{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0"><i class="bi bi-calendar3 me-2" style="color:var(--accent);"></i>Study Planner</h4>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSessionModal">
+        <i class="bi bi-plus-circle me-1"></i> Add Session
+    </button>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center p-3">
+            <i class="bi bi-calendar-check fs-2 mb-1" style="color:var(--accent);"></i>
+            <h5 class="fw-bold mb-0">{{ upcoming.count }}</h5>
+            <small class="text-muted">Upcoming Sessions</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center p-3">
+            <i class="bi bi-check-circle fs-2 mb-1 text-success"></i>
+            <h5 class="fw-bold mb-0">{{ upcoming.filter.is_done }}</h5>
+            <small class="text-muted">Completed</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center p-3">
+            <i class="bi bi-clock-history fs-2 mb-1" style="color:var(--gold);"></i>
+            <h5 class="fw-bold mb-0">{{ past.count }}</h5>
+            <small class="text-muted">Past Sessions</small>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Sessions -->
+<div class="card mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0"><i class="bi bi-calendar-week me-2"></i>Upcoming Sessions</h6>
+        <a href="{% url 'exam_list' %}" class="btn btn-sm btn-gold">
+            <i class="bi bi-mortarboard me-1"></i>Exam Dates
+        </a>
+    </div>
+    <div class="card-body p-0">
+        {% if upcoming %}
+        <div class="list-group list-group-flush">
+            {% for session in upcoming %}
+            <div class="list-group-item px-4 py-3 d-flex align-items-center gap-3
+                        {% if session.is_done %}opacity-50{% endif %}">
+                <!-- Date Badge -->
+                <div class="text-center rounded p-2 flex-shrink-0"
+                     style="background:var(--light-bg); min-width:52px;">
+                    <div class="fw-bold" style="color:var(--accent); font-size:.8rem;">
+                        {{ session.date|date:"M" }}
+                    </div>
+                    <div class="fw-bold" style="font-size:1.3rem; line-height:1; color:var(--primary);">
+                        {{ session.date|date:"d" }}
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="flex-grow-1">
+                    <div class="fw-semibold {% if session.is_done %}text-decoration-line-through{% endif %}">
+                        {{ session.subject }}
+                    </div>
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}
+                        {% if session.description %}
+                        &nbsp;·&nbsp; {{ session.description|truncatechars:40 }}
+                        {% endif %}
+                    </small>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex gap-2 flex-shrink-0">
+                    <a href="{% url 'schedule_toggle' session.pk %}"
+                       class="btn btn-sm {% if session.is_done %}btn-outline-secondary{% else %}btn-outline-success{% endif %}"
+                       title="{% if session.is_done %}Mark Pending{% else %}Mark Done{% endif %}">
+                        <i class="bi {% if session.is_done %}bi-arrow-counterclockwise{% else %}bi-check-lg{% endif %}"></i>
+                    </a>
+                    <a href="{% url 'schedule_delete' session.pk %}"
+                       class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('Delete this session?')"
+                       title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-calendar-x display-4 d-block mb-2"></i>
+            No upcoming sessions. Add one to get started!
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Past Sessions -->
+{% if past %}
+<div class="card">
+    <div class="card-header py-3">
+        <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Past Sessions</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for session in past %}
+            <div class="list-group-item px-4 py-3 d-flex align-items-center gap-3 opacity-60">
+                <div class="text-center rounded p-2 flex-shrink-0"
+                     style="background:var(--light-bg); min-width:52px;">
+                    <div class="fw-bold text-muted" style="font-size:.8rem;">{{ session.date|date:"M" }}</div>
+                    <div class="fw-bold" style="font-size:1.3rem; line-height:1;">{{ session.date|date:"d" }}</div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold text-decoration-line-through text-muted">{{ session.subject }}</div>
+                    <small class="text-muted">{{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</small>
+                </div>
+                <a href="{% url 'schedule_delete' session.pk %}"
+                   class="btn btn-sm btn-outline-danger"
+                   onclick="return confirm('Delete this session?')">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Add Session Modal -->
+<div class="modal fade" id="addSessionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background:var(--card-bg); color:var(--text-main);">
+            <div class="modal-header" style="background:var(--primary); color:white;">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Add Study Session</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'schedule_add' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Subject</label>
+                        {{ form.subject }}
+                        {% if form.subject.errors %}
+                        <div class="text-danger small mt-1">{{ form.subject.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description <span class="text-muted fw-normal">(optional)</span></label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Date</label>
+                        {{ form.date }}
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-semibold">Start Time</label>
+                            {{ form.start_time }}
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-semibold">End Time</label>
+                            {{ form.end_time }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Add Session
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
